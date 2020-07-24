@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="mapBox" style="width: 1300px;height: 700px;"></div>
+</body>
+<script type="text/javascript" src="./lib/jquery.min.js"></script>
+<script src="./lib/echarts.js"></script>
+<script src="./lib/echarts-gl.js"></script>
+
+
+<script type="text/javascript">
+    //从json文件中取出地图信息
+    $.get('./data/json/province/hainan.json', function (chinaJson) {
+        echarts.registerMap('jiangmen', chinaJson);
+        var mapBoxEchart = echarts.init(document.getElementById('mapBox'));
+        mapBoxEchart.setOption({
+            geo3D: {
+                map: 'jiangmen',
+                type: 'map',
+                boxHeight: 2.2,
+                regionHeight: 2,
+                roam: true,
+                label: {
+                    //地图上是否显示市区名称
+                    normal: {
+                        show: true,
+                        color: "#FFF76D"
+                    },
+                    emphasis: {
+                        show: true,
+                        color: "#FFF76D"
+                    }
+                },
+                itemStyle: {
+                    //color: '#00287A',
+                    color: "#2E55FC",
+                    borderColor: '#00287A', //省份的边框颜色 330867
+                    borderWidth: 1.5, //省份的边框宽度
+                    opacity: 0.5
+                },
+                emphasis: {
+                    color: 'rgba(10, 21, 67, 0.3)',
+                    borderWidth: 1,
+                    borderColor: '#3fdaff',
+                    //areaColor: "#7DC3DE",
+                    shadowColor: '#fff',
+                    opacity: 0.5,
+                    shadowBlur: 30
+                },
+                light: { //光照阴影
+                    main: {
+                        color: '#2F85DC', 　　　　//光照颜色
+                        intensity: 2, 　　　　　　//光照强度
+                        shadowQuality: 'high', 　　//阴影亮度
+                        shadow: true, 　　　　　　//是否显示阴影
+                        alpha: 50,
+                        beta: 10
+                    },
+                    ambient: {
+                        intensity: 0
+                    }
+                },
+                postEffect: {
+                    enable: true,
+                    bloom: {
+                        enable: true
+                    }
+                },
+                groundPlane: {
+                    show: false
+                },
+                shading: 'realistic',
+                zoomSensitivity: 10 //缩放灵敏度
+            },
+            series: [
+                {
+                    //配置路径
+                    type: 'lines3D',
+                    coordinateSystem: 'geo3D',
+                    polyline: 'true',
+                    blendMode: 'lighter',
+                    zlevel: 102,
+                    effect: {
+                        show: true,
+                        trailWidth: 3,
+                        trailOpacity: 0.5,
+                        trailLength: 0.2,
+                        constantSpeed: 5
+                    },
+                    lineStyle: {
+                        color: '#FFB728',
+                        opacity: 0.8,
+                        width: 1.5
+                    },
+                    data: [
+                        {
+                            coords: [[113.149649, 22.617641], [112.88089, 22.583612]],
+                            // 数据值
+                            value: 100,
+                            // 数据名
+                            name: '测试一',
+                            // 线条样式
+                            lineStyle: {}
+                        }, {
+                            coords: [[112.316858, 22.186088], [112.88089, 22.583612]],
+                            // 数据值
+                            value: 100,
+                            // 数据名
+                            name: '测试二',
+                            // 线条样式
+                            lineStyle: {}
+                        }
+                    ]
+                },
+                {
+                    //配置位置标记点
+                    type: 'scatter3D',
+                    coordinateSystem: 'geo3D',
+                    symbol: 'circle',
+                    symbolSize: 15,
+                    blendMode: 'lighter',
+                    zlevel: 11,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{b}',
+                        textStyle: {
+                            color: '#000',
+                            fontFamily: "Microsoft YaHei",
+                        }
+                    },
+                    itemStyle: {
+                        color: '#a8edea' //标记颜色
+                    },
+                    data: [{ name: '测试一', value: [113.149649, 22.617641, 100] },
+                    { name: '测试二', value: [112.316858, 22.186088, 100] }]
+                }, {
+                    //配置攻击点
+                    type: 'scatter3D',
+                    coordinateSystem: 'geo3D',
+                    symbol: 'pin', symbolSize: function (val) {
+                        var ret;
+                        if ((val[2] >= 0) && (val[2] < 1000)) {
+                            ret = 50;
+                        } else {
+                            ret = 65;
+                        }
+                        return ret;
+                    },
+                    blendMode: 'lighter',
+                    zlevel: 11,
+                    label: {
+                        show: true,
+                        position: 'top',
+                        //formatter: '{b}',
+                        formatter: function (params) {
+                            var ret = params.value[2];
+                            return ret;
+                        },
+                        textStyle: {
+                            color: '#000',
+                            fontFamily: "Microsoft YaHei",
+                            fontWeight: 'bold'
+                        }
+                    },
+                    itemStyle: {
+                        show: true,
+                        color: '#eb4f38'
+                    },
+                    data: [{ name: '中心', value: [112.88089, 22.583612, 200] }]
+                }
+            ]
+
+        })
+    })
+</script>
+
+</html>

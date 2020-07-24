@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app" style="height: 600px; width: 100%;">
+        <div id="myChart" style="height: 600px; width: 100%;"></div>
+    </div>
+</body>
+
+<script src="./lib/vue.js"></script>
+<script src="./lib/echarts.js"></script>
+<script src="./lib/echarts-gl.js"></script>
+<script src="./lib/jquery.min.js"></script>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            msg: "aaa"
+        },
+        mounted () {
+            this.initMap()
+        },
+        methods: {
+            initMap() {
+                var myChart = echarts.init(document.getElementById('myChart'));
+                var uploadedDataURL = "./data/json/china.json";
+                //标识数据,用来标识地图上的点，给用户提供点击事件
+                var geoCoordMap = {
+                    '黑龙江': [127.9688, 45.368],
+                    '内蒙古': [110.3467, 41.4899],
+                    "吉林": [125.8154, 44.2584],
+                    '北京市': [116.4551, 40.2539],
+                    "辽宁": [123.1238, 42.1216],
+                    "河北": [114.4995, 38.1006],
+                    "天津": [117.4219, 39.4189],
+                    "山西": [112.3352, 37.9413],
+                    "陕西": [109.1162, 34.2004],
+                    "甘肃": [103.5901, 36.3043],
+                    "宁夏": [106.3586, 38.1775],
+                    "青海": [101.4038, 36.8207],
+                    "新疆": [87.9236, 43.5883],
+                    "西藏": [91.11, 29.97],
+                    "四川": [103.9526, 30.7617],
+                    "重庆": [108.384366, 30.439702],
+                    "山东": [117.1582, 36.8701],
+                    "河南": [113.4668, 34.6234],
+                    "江苏": [118.8062, 31.9208],
+                    "安徽": [117.29, 32.0581],
+                    "湖北": [114.3896, 30.6628],
+                    "浙江": [119.5313, 29.8773],
+                    "福建": [119.4543, 25.9222],
+                    "江西": [116.0046, 28.6633],
+                    "湖南": [113.0823, 28.2568],
+                    "贵州": [106.6992, 26.7682],
+                    "云南": [102.9199, 25.4663],
+                    "广东": [113.12244, 23.009505],
+                    "广西": [108.479, 23.1152],
+                    "海南": [110.3893, 19.8516],
+                    '上海': [121.4648, 31.2891]
+
+                };
+                var chinaDatas = [
+                    [{
+                        name: '黑龙江',
+                        value: 100
+                    }],
+                    [{
+                        name: '内蒙古',
+                        value: 300
+                    }],
+                    [{
+                        name: '吉林',
+                        value: 300
+                    }],
+                    [{
+                        name: '辽宁',
+                        value: 300
+                    }],
+                    [{
+                        name: '河北',
+                        value: 300
+                    }],
+                    [{
+                        name: '天津',
+                        value: 300
+                    }],
+                    [{
+                        name: '山西',
+                        value: 300
+                    }],
+                    [{
+                        name: '陕西',
+                        value: 300
+                    }],
+                    [{
+                        name: '甘肃',
+                        value: 300
+                    }],
+                    [{
+                        name: '宁夏',
+                        value: 300
+                    }],
+                    [{
+                        name: '青海',
+                        value: 300
+                    }],
+                    [{
+                        name: '新疆',
+                        value: 300
+                    }],
+                    [{
+                        name: '西藏',
+                        value: 300
+                    }],
+                    [{
+                        name: '四川',
+                        value: 300
+                    }],
+                    [{
+                        name: '重庆',
+                        value: 300
+                    }],
+                    [{
+                        name: '山东',
+                        value: 300
+                    }],
+                    [{
+                        name: '河南',
+                        value: 300
+                    }],
+                    [{
+                        name: '江苏',
+                        value: 300
+                    }],
+                    [{
+                        name: '安徽',
+                        value: 300
+                    }],
+                    [{
+                        name: '湖北',
+                        value: 300
+                    }],
+                    [{
+                        name: '浙江',
+                        value: 300
+                    }],
+                    [{
+                        name: '福建',
+                        value: 300
+                    }],
+                    [{
+                        name: '江西',
+                        value: 300
+                    }],
+                    [{
+                        name: '湖南',
+                        value: 300
+                    }],
+                    [{
+                        name: '贵州',
+                        value: 300
+                    }],
+                    [{
+                        name: '广西',
+                        value: 300
+                    }],
+                    [{
+                        name: '海南',
+                        value: 300
+                    }],
+                    [{
+                        name: '上海',
+                        value: 1300
+                    }]
+                ];
+                $.getJSON(uploadedDataURL, function (geoJson) {
+                    echarts.registerMap('china', geoJson);
+                    //处理数据,是的数据格式符合echarts
+                    var convertData = function(data) {
+                        var res = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var geoCoord = geoCoordMap[data[i][0].name];
+                            if (geoCoord) {
+                                res.push({
+                                    name: data[i][0].name,
+                                    value: geoCoord.concat(data[i][0].value)
+                                });
+                            }
+                        }
+                        return res;
+                    };
+                    //具体配置，并输出
+                    const option = {
+                        backgroundColor: '#fff',
+                        geo3D: {
+                            data: convertData(chinaDatas),
+                            map: 'china',
+                            color: '#fff',
+                            roam: true, //是否开启鼠标缩放和平移漫游。默认不开启。
+                            itemStyle: {
+                                areaColor: 'rgba(255,255,255,1)',
+                                opacity: 1,
+                                borderWidth: 1,
+                                borderColor: '#000'
+                            }, //地图上每个省的颜色配置
+                            label: {
+                                show: false,
+                            },// 标特是否显示，显示配置
+                            
+                            emphasis: { //当鼠标放上去的状态
+                                label: {
+                                    show: true
+                                },
+                                itemStyle: {
+                                    color: '#000'
+                                }
+                            },
+                            
+                            tooltip: 'axis', //提示框设置
+                            
+                            formatter: val => {
+                                return val
+                            },
+                            /** 标签内容格式器，支持字符串模板和
+                            回调函数两种形式，字符串模板与回调函数
+                            返回的字符串均支持用 \n 换行。**/
+                            
+                            // legendHoverLink: true,
+                            
+                            regions: [{
+                                name: '山东',
+                                itemStyle: {
+                                    color: '#000',
+                                    opacity: 1,
+                                },
+                                label: {
+                                    show: true
+                                },
+                            }],//默认高亮区域
+                        },
+                        series: [{
+                            name: 'light',
+                            type: 'scatter3D', //标识点
+                            symbol: 'pin',  //散点的形状。默认为圆形。
+                            coordinateSystem: 'geo3D',
+                            data: convertData(chinaDatas),
+                            symbolSize: function() {
+                                return 36
+                            },
+                            label: {
+                                show: false
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#f00'
+                                }
+                            },
+                            zlevel: 6,
+                            emphasis: { //当鼠标放上去  地区区域是否显示名称
+                                label: {
+                                    show: false
+                                },
+                                itemStyle: {
+                                    color: '#000'
+                                }
+                            },
+                        }]
+                    };
+                    myChart.setOption(option);
+
+                    let count = 0
+                    let regions = setInterval(function() {
+                        option.geo3D.regions[0].name = option.geo3D.data[count].name
+                        myChart.setOption(option);
+                        count ++
+                        if (count === option.geo3D.data.length) {
+                            count = 0
+                        }
+                    }, 1000);
+
+                    myChart.on('click',function(params){
+                        console.log("params", params)
+                        clearInterval(regions)
+                        count = params.dataIndex
+                        option.geo3D.regions[0].name = params.name
+                        myChart.setOption(option);
+                    });
+
+                    myChart.getZr().on('dblclick', function(params) {
+                        clearInterval(regions)
+                        regions = setInterval(function() {
+                            option.geo3D.regions[0].name = option.geo3D.data[count].name
+                            console.log(count)
+                            myChart.setOption(option);
+                            count ++
+                            if (count === option.geo3D.data.length) {
+                                count = 0
+                            }
+                        }, 1000);
+                    });
+
+
+                });
+            }
+        }
+    })
+</script>
+</html>
